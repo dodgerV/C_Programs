@@ -1,0 +1,45 @@
+C_Programs
+==========
+#include <stdio.h>
+int main(void)
+{
+   int sum=0,max=0,zero=0;
+   int i=0,j=0,ind=0;
+   int lines=0, columns=0;
+   printf("Введите количество строк: ");
+   scanf("%i" ,&lines);
+   printf("Введите количество столбцов: ");
+   scanf("%i" ,&columns);
+   int matrix [lines][columns];
+   
+   for(i=0; i<lines; i++)
+   {
+   	for(j=0; j<columns; j++)
+   	{
+   	matrix[i][j]=i*j+34;
+   	printf("%i ",matrix[i][j]);
+    }
+    printf("\n");
+   }
+
+   for(i=0; i<lines;i++)
+   {
+    zero+=matrix[i][0];
+   }
+    max=zero;
+
+   for(j=0; j<columns; j++)
+   {
+    sum=0;
+   	for(i=0; i<lines; i++)
+   	{
+   	    sum+=matrix[i][j];
+    }
+      if(sum>zero)
+     { 
+      ind=j;
+      max=sum;
+     }
+ }  
+   printf("Максимальная сумма: %i\nВ столбце: %i\n",max,ind);
+}
