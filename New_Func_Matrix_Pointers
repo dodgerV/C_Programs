@@ -1,2 +1,162 @@
 C_Programs
 ==========
+#include <stdio.h>
+
+void special_fill(int *mass,int parametr,int *s)
+{
+   int i,j;
+   for(i=0; i<parametr; i++)
+   {
+      for(j=0; j<parametr; j++)
+      {
+        *((int*)mass+parametr*i+j)=*((int*)s+9*i+j);
+      }
+   }
+}
+
+void fill(int *mass,int parametr)
+{
+   int i,j;
+   for(i=0; i<parametr; i++)
+   {
+      for(j=0; j<parametr; j++)
+      {
+        *((int*)mass+parametr*i+j)=i*2-j;
+      }
+   }
+}
+
+void show(int *mass,int parametr)
+{
+   int i,j;
+   for(i=0; i<parametr; i++)
+   {
+      for(j=0; j<parametr; j++)
+      {
+         printf("%4i",*((int*)mass+parametr*i+j));
+      }
+         printf("\n");
+   }
+}
+
+void change(int parametr,int *mass)
+{
+   int top=0;
+   int i=0,j=0,t=0,g=0,I=0;
+   int diag=0,summ_d=0;
+
+   //1) first diags
+
+   for(diag=0; diag<parametr; diag++)
+   {
+      for(i=parametr-1-diag,j=0; i<parametr,j<diag+1; i++,j++)
+      {
+         
+         summ_d=0;
+         if(i!=parametr-1 && j==0)
+         {
+            for(I=i,g=0; I<parametr,g<diag+1; I++,g++)
+            {
+               summ_d+=*((int*)mass+parametr*I+g);
+            }
+         }
+          
+          top=0;
+            for(t=i-1; t>=0; t--)
+            {
+               top+=*((int*)mass+parametr*t+j);
+            }
+            
+            if(i==parametr-1-diag && diag==0)
+         {
+           *((int*)mass+parametr*i+j)+=top;
+         }
+         else if( j==0)
+         {
+            *((int*)mass+parametr*i+j)=top+summ_d;
+         }
+         else
+         {
+         *((int*)mass+parametr*i+j)=top+*((int*)mass+parametr*(i-1)+(j-1));
+         }
+      }
+   }
+   
+   //2)
+
+   for(diag=0; diag<parametr-1; diag++)
+   {
+      for(i=0,j=1+diag; i<parametr-2-diag,j<parametr; i++,j++)
+      {
+         summ_d=0;
+         if(i==0)
+         {
+            for(I=i,g=1+diag; I<parametr-2-diag,g<parametr; I++,g++)
+            {
+               summ_d+=*((int*)mass+parametr*I+g);
+            }
+            printf("%i\n",summ_d);
+            *((int*)mass+parametr*i+j)=summ_d;
+         }
+         else
+         {
+            top=0;
+            for(t=i-1; t>=0; t--)
+            {
+               top+=*((int*)mass+parametr*t+j);
+            }
+            *((int*)mass+parametr*i+j)=top+*((int*)mass+parametr*(i-1)+(j-1));
+         }
+          
+          
+      }
+   }
+} 
+
+int main(void)
+{
+   int i=0, j=0;
+	int parametr=9;
+   int matrix[9][9];
+   int *mass;
+   int *s;
+   mass=(int*)matrix;
+   
+   fill(mass,parametr);
+   printf("Матрица до изменения:\n");
+   show(mass,parametr);
+   change(parametr,mass);
+   printf("Матрица после изменения:\n");
+   show(mass,parametr);
+   printf("\nTo continue press enter\n");
+   scanf("gf");
+   
+   parametr=4;
+   int matrix_1[4][4];
+   mass=(int*)matrix_1;
+   
+   fill(mass,parametr);
+   printf("Матрица до изменения:\n");
+   show(mass,parametr);
+   change(parametr,mass);
+   printf("Матрица после изменения:\n");
+   show(mass,parametr);
+   printf("\nTo continue press enter\n\n");
+   scanf("lad");
+   
+   parametr=4;
+   int matrix_2[4][4];
+   mass=(int*)matrix_2;
+   s=(int*)matrix;
+
+   special_fill(mass,parametr,s);
+   printf("Матрица до изменения:\n");
+   show(mass,parametr);
+   change(parametr,mass);
+   printf("Матрица после изменения:\n");
+   show(mass,parametr);
+   printf("\nProgram finished!");
+}
+
+   
+
