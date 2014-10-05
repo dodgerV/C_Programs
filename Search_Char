@@ -1,0 +1,76 @@
+#include <stdio.h>
+
+char* Search(char* string, char elem)
+{
+	if(elem=='\n')
+	{
+		*string='\n';
+		return string;
+	}
+	if(elem=='\0')
+	{
+		return (string+49);	
+	}
+
+	while(*string!='\n')
+	{
+		if(elem==*string)
+		{
+			return string;
+			break;	
+		}
+		else
+		{
+			*(string++);
+		}
+	}
+		return NULL;
+	
+	
+}
+
+void main()
+{
+	char elem;
+	char* string;
+	char *file_name = "test.txt"; 
+	FILE *file;
+	char text[50];
+	file = fopen (file_name, "r");
+		
+		if(file == 0)
+	{
+		printf("не могу открыть файл '%s'",file_name);
+	}
+
+	fgets (text, 50, file);
+	printf("%s",text);
+	string=(char*)text;
+	printf("Enter char for search: ");
+	scanf("%c",&elem);
+	string=Search(string,elem);
+	
+	if(*string=='\n')
+	{
+		printf("This symbol is the end of string\n");
+	}
+		else
+		{
+			if(string!=NULL)
+			{
+				while(*string!='\n')
+				{
+					printf("%c",*string);
+					*(string++);
+				}
+					printf("\n");
+			}
+				else
+				{
+					printf("Symbol not found\n");
+				}
+		}
+
+	fclose(file);
+	
+} 
