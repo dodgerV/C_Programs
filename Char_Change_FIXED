@@ -1,14 +1,16 @@
 #include <stdio.h>
 
-char* Search(char* string, char elem)
+char* Search(char* string, char elem,int finish)
 {
+
+	
 	if(elem=='\n')
 	{
 		*string='\n';
 		return string;
 	}
 
-	while(*string!='\n')
+	while(*string!=*(string+finish))
 	{
 		if(elem==*string)
 		{
@@ -18,6 +20,10 @@ char* Search(char* string, char elem)
 		else
 		{
 			*(string++);
+		}
+		if(*string==*(string+finish))
+		{
+		    return NULL;
 		}
 	}
 
@@ -30,13 +36,13 @@ void main()
 	char *file_name = "test.txt"; 
 	FILE *file;
 	char text[50];
-	int i=0, finish=0;
+	int i=0, finish=0,k;
 	
 	file = fopen (file_name, "r");
 		
 		if(file == 0)
 	{
-		printf("не могу открыть файл '%s'",file_name);
+		printf("Cannot open file '%s'",file_name);
 	}
 
 
@@ -52,40 +58,28 @@ void main()
 	}
 	
 	printf("%s",text);
+	k=finish-1;
 	string=(char*)text;
 	printf("Enter char for search: ");
 	scanf("%c",&elem);
 	
-
-	for(i=0; i<finish;i++)
-	{
-		if(elem==text[i])
-		{
-			string=Search(string,elem);
-			break;
-		}
-		else if(i==finish-1)
-		{
-			printf("Symbol not found\n");
-			string=NULL;
-		}
-	}
+	string=Search(string,elem,k);
 
 if(string!=NULL)
 {
-	if(*string=='\n')
-		{
-			printf("This symbol is the end of string\n");
-		}
-	else
-		{
-			while(*string!='\n')
-				{
-					printf("%c",*string);
-					*(string++);
-				}
-					printf("\n");
-		}
+    if(*string=='\n')
+	{
+	    printf("This symbol is the end of string\n");
+	}
+    else
+	{
+	    printf("%s",string);
+	}
+}
+
+else
+{
+ printf("Symbol not found");   
 }
 	fclose(file);
 } 
