@@ -1,0 +1,381 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+typedef struct class 
+	{ 
+		char ser_name[20];
+		char name[20];
+		int year;
+		char letter;
+		char marks[20];
+		double between;
+		double centre;
+		int member;
+		char sort [40];
+		struct class *next;
+		struct class *prev;
+
+	}myclass;
+
+myclass* BEG=NULL;
+myclass* END=NULL;
+
+struct class *create_el()
+{
+    struct class *p;
+    
+    p=(myclass*)malloc(sizeof(myclass));
+    p->next=NULL;
+    p->prev=NULL;
+    return p;
+}
+
+struct class *add_to_end(struct class *p, struct class *last )
+{
+    struct class *temp=NULL;
+    temp=last;
+
+    if (temp==NULL)
+        temp=p->prev;
+    else
+    {
+        temp->next=p;
+        p->prev=temp;
+    }
+    return p;
+}
+
+struct class* read_from_file(FILE * file, struct class* p)
+{
+	char flag=fscanf(file,"%s%s%i%c%s",p->ser_name,p->name,&(p->year),&(p->letter),p->marks);
+	
+	if(flag!=EOF)
+	{
+		return p;
+	}
+	else
+	{
+		return NULL;
+	}	
+}
+
+struct class *fill(char* file_name )
+{  
+	int flag=1;
+	struct class* last=NULL;
+	struct class* p=NULL;
+    FILE *file;
+	file = fopen (file_name, "r");
+		
+		if(file == 0)
+	{
+		printf("can't open file: '%s'",file_name);
+	}
+
+	p=create_el();
+	p=read_from_file(file,p);
+
+	while(flag!=0)
+	{
+		last=p;
+		p=create_el();
+		p=read_from_file(file,p);
+		if(p==NULL)
+		{
+			flag=0;
+			free(p);
+		}
+		else
+		{
+			p=add_to_end(p,last);
+		}
+	}
+	fclose(file);
+    return last;
+}
+
+
+
+void show ( struct class *last)
+{
+   struct class *p = NULL;
+   int flag=1;
+    p = last;
+    while(p->prev != NULL)
+    {
+       p = p->prev;
+    }
+
+	printf("\n");
+    while (flag!=0)
+    {
+		printf("%s %s %i%c %s %f\n",p->ser_name,p->name,p->year,p->letter,p->marks,p->centre);
+		if(p->next==NULL)
+		{
+			flag=0;
+		}
+		else
+		{
+			p = p->next;
+		}
+    }
+    printf("\n");
+ }
+
+void replace(struct class* first,struct class* second)
+{
+	struct class *temp=create_el();
+	struct class *temp_2=create_el();
+	*temp=*first;
+	temp->prev=second->prev;
+	temp->next=second->next;
+	*temp_2=*second;
+	temp_2->prev=first->prev;
+	temp_2->next=first->next;
+	*second=*temp;
+	*first=*temp_2;
+	free(temp);
+	free(temp_2);
+}
+
+void QuickSortList_center(myclass *pLeft, myclass *pRight)
+{
+	myclass *pStart;
+	myclass *pCurrent; 
+	myclass *temp;
+	
+	if (pLeft == pRight) return;
+
+	pStart = pLeft;
+	pCurrent = pStart->next;
+
+	while (1)
+	{
+		if (pStart->centre > pCurrent->centre)
+		{
+			replace(pStart,pCurrent);
+
+		}	
+		if (pCurrent == pRight) break;
+		pCurrent = pCurrent->next;
+	}
+
+	replace(pLeft,pCurrent);
+
+	myclass *pOldCurrent = pCurrent;
+
+	pCurrent = pCurrent->prev;
+	if (pCurrent != NULL)
+	{
+		if ((pLeft->prev != pCurrent) && (pCurrent->next != pLeft))
+			QuickSortList_center(pLeft, pCurrent);
+	}
+
+	pCurrent = pOldCurrent;
+	pCurrent = pCurrent->next;
+	if (pCurrent != NULL)
+	{
+		if ((pCurrent->prev != pRight) && (pRight->next != pCurrent))
+			QuickSortList_center(pCurrent, pRight);
+	}
+}
+
+void QuickSortList_sername(myclass *pLeft, myclass *pRight)
+{
+	myclass *pStart;
+	myclass *pCurrent; 
+	myclass *temp;
+	
+	if (pLeft == pRight) return;
+
+	pStart = pLeft;
+	pCurrent = pStart->next;
+
+	while (1)
+	{
+		if (strcmp(pStart->sort,pCurrent->sort)<0)
+		{
+			replace(pStart,pCurrent);	
+		}	
+		if (pCurrent == pRight) break;
+		pCurrent = pCurrent->next;
+	}
+
+	replace(pLeft,pCurrent);
+	
+	myclass *pOldCurrent = pCurrent;
+
+	
+	pCurrent = pCurrent->prev;
+	if (pCurrent != NULL)
+	{
+		if ((pLeft->prev != pCurrent) && (pCurrent->next != pLeft))
+			QuickSortList_sername(pLeft, pCurrent);
+	}
+
+	pCurrent = pOldCurrent;
+	pCurrent = pCurrent->next;
+	if (pCurrent != NULL)
+	{
+		if ((pCurrent->prev != pRight) && (pRight->next != pCurrent))
+			QuickSortList_sername(pCurrent, pRight);
+	}
+}
+
+
+void compare(int size,struct class* p,double* point_mid,int* mem)
+{
+	int i=0,j=0,count=1;
+	struct class* temp=NULL;
+	struct class* ancient=p;
+	double class_mid=0;
+
+	for(i=0;i<size;i++)
+	{
+		count=1;
+		class_mid=p->between;
+		temp=ancient;
+		for(j=0;j<size;j++)
+		{
+			if(p->year==temp->year && p->letter==temp->letter && j!=i )
+			{
+				class_mid+=temp->between;
+				count++;
+			}
+			temp=temp->next;
+		}
+		*(mem+i)=count;
+		*(point_mid+i)=class_mid/count;
+		p=p->next;
+	}
+}
+
+
+double middle(int* numbers,int small_size)
+{
+	int i;
+	double mid=0;
+	for(i=0;i<small_size;i++)
+	{
+		mid+=*(numbers+i);
+	}
+	mid=mid/small_size;
+	return mid;
+} 
+
+
+int* fix(char* point,int small_size)
+{
+	int arr[small_size],i,j=0;
+	int* numbers=NULL;	
+	
+	for(i=0;i<20;i++)
+	{
+		if(*(point+i)!=',')
+		{
+			if(j==small_size)
+				break;
+			arr[j]=*(point+i)-48;
+			j++;
+			
+		}	
+	}
+	numbers=(int*)arr;
+
+	return numbers;
+}
+
+void main()
+{	
+
+	int small_size=1,i,size=8,flag=0,member_arr[8],j;
+	double class_mid,mid_arr[8],mid=0;
+	
+	double* point_mid=NULL;
+	char* point=NULL;
+	int* numbers=NULL;
+	int* mem=NULL;
+
+	char *file_name = "four.txt"; 
+	struct class *p=NULL;
+	struct class *Left_p=NULL;
+
+	p=fill(file_name);
+	show(p);
+	END=p;
+	
+	for(i=0;i<20;i++)
+		{
+			if(p->marks[i]==',')
+				small_size++;
+		}
+	
+	while(flag!=1)
+	{
+		if(p->prev==NULL)
+		{
+			flag=1;	
+		}
+		else
+		{
+			point=&(p->marks[0]);
+			numbers=fix(point,small_size);
+			mid=middle(numbers,small_size);
+			p->between=mid;
+			p=p->prev;
+			// слияние фамилии и имени
+			strncat(p->sort,p->ser_name,20);
+			strncat(p->sort,p->name,20);
+		}	
+	}
+
+	point_mid=&mid_arr[0];
+	mem=&member_arr[0];
+	compare(size,p,point_mid,mem);
+
+	flag=0;
+	i=0;
+	BEG=p;
+	while(flag!=1)
+	{
+		p->centre=*(point_mid+i);
+		p->member=*(mem+i);
+			if(p->next==NULL)
+			{
+				flag=1;
+			}
+			else
+			{
+				p=p->next;
+				i++;
+			}	
+	}
+
+	show(p);
+	QuickSortList_center(BEG,p);
+	printf("After centre sort\n");
+	show(p);
+	Left_p=BEG;
+
+	for(i=0;i<size;i+=Left_p->member)
+	{
+		p=Left_p;
+
+		if(Left_p->member>1)
+		{
+			p=Left_p->next;
+
+			for(j=1;j<Left_p->member-1;j++)
+				p=p->next;
+
+			QuickSortList_sername(Left_p,p);
+		}
+
+		if(p->next!=NULL)
+			Left_p=p->next;
+	}
+
+		printf("\nArray after sort:\n");
+		show(BEG);
+}
